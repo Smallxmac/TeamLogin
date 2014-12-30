@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace LoginSystem
 {
-    public partial class Form1 : Form
+    public partial class LoginUI : Form
     {
-        public Form1()
+        public LoginUI()
         {
             InitializeComponent();
         }
@@ -23,6 +23,11 @@ namespace LoginSystem
         }
 
         private void Pass_Box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
         {
 
         }
