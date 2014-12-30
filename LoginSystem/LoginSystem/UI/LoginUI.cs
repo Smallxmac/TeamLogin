@@ -16,5 +16,15 @@ namespace LoginSystem
         {
             InitializeComponent();
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Pass_Box_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
