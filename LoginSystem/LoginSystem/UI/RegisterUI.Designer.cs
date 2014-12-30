@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegisterUI));
             this.Cancel_button = new System.Windows.Forms.Button();
             this.Register_button = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -139,6 +140,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Register_button);
             this.Controls.Add(this.Cancel_button);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RegisterUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "RegisterUI";
