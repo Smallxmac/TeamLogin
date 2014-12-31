@@ -71,8 +71,8 @@
     <Compile Include="Enums\AccountStatus.cs" />
     <Compile Include="Handlers\AccountHandler.cs" />
     <Compile Include="IO\Flatfile\IniParser.cs" />
-    <Compile Include="Object Models\Account.cs" />
-    <Compile Include="Object Models\User.cs" />
+    <Compile Include="ObjectModels\Account.cs" />
+    <Compile Include="ObjectModels\User.cs" />
     <Compile Include="UI\AboutUI.cs">
       <SubType>Form</SubType>
     </Compile>

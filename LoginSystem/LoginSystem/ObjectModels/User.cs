@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoginSystem.Object_Models
+namespace LoginSystem.ObjectModels
 {
     class User
     {
