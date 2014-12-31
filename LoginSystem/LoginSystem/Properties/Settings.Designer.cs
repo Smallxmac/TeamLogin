@@ -31,5 +31,14 @@ namespace LoginSystem.Properties {
                 return ((string)(this["ConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("accounts")]
+        public string AccountTable {
+            get {
+                return ((string)(this["AccountTable"]));
+            }
+        }
     }
 }

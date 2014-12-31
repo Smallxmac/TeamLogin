@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Enums\AccountStatus.cs" />
     <Compile Include="Handlers\AccountHandler.cs" />
+    <Compile Include="IO\Database\DatabaseHandler.cs" />
     <Compile Include="IO\Flatfile\IniParser.cs" />
     <Compile Include="ObjectModels\Account.cs" />
     <Compile Include="ObjectModels\User.cs" />
@@ -135,9 +136,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\Database\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\Pauloruberto-Custom-Round-Yosemite-FileBot.ico" />
     <None Include="Resources\Pauloruberto-Custom-Round-Yosemite-KeepassX.ico" />
