@@ -49,15 +49,18 @@
             this.Cancel_button.TabIndex = 0;
             this.Cancel_button.Text = "Cancel";
             this.Cancel_button.UseVisualStyleBackColor = true;
+            this.Cancel_button.Click += new System.EventHandler(this.Cancel_button_Click);
             // 
             // Register_button
             // 
+            this.Register_button.Cursor = System.Windows.Forms.Cursors.Default;
             this.Register_button.Location = new System.Drawing.Point(145, 106);
             this.Register_button.Name = "Register_button";
             this.Register_button.Size = new System.Drawing.Size(80, 23);
             this.Register_button.TabIndex = 1;
             this.Register_button.Text = "Register";
             this.Register_button.UseVisualStyleBackColor = true;
+            this.Register_button.Click += new System.EventHandler(this.Register_button_Click);
             // 
             // label1
             // 

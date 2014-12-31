@@ -23,6 +23,7 @@ namespace LoginSystem.Enums
         //++++For Register++++
         AccountCreated = 5,
         AccountNameUsed = 6,
+        AccountEmailUsed = 7,
 
         ServerError = 255,
     }

@@ -61,6 +61,78 @@ namespace LoginSystem.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your account has been banned until: .
+        /// </summary>
+        internal static string ACCOUNT_BANNED {
+            get {
+                return ResourceManager.GetString("ACCOUNT_BANNED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congrulations the account has been created..
+        /// </summary>
+        internal static string ACCOUNT_CREATED {
+            get {
+                return ResourceManager.GetString("ACCOUNT_CREATED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The E-Mail provided already is tied to an account..
+        /// </summary>
+        internal static string ACCOUNT_EMAIL_EXIST {
+            get {
+                return ResourceManager.GetString("ACCOUNT_EMAIL_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The information provided does not match any of our records..
+        /// </summary>
+        internal static string ACCOUNT_INVALID {
+            get {
+                return ResourceManager.GetString("ACCOUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The username you are trying to register has been taken..
+        /// </summary>
+        internal static string ACCOUNT_NAME_EXIST {
+            get {
+                return ResourceManager.GetString("ACCOUNT_NAME_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account has not been activated just yet..
+        /// </summary>
+        internal static string ACCOUNT_NOT_ACTIVATED {
+            get {
+                return ResourceManager.GetString("ACCOUNT_NOT_ACTIVATED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The email you have provided does not seem to be valid..
+        /// </summary>
+        internal static string INVALID_EMAIL {
+            get {
+                return ResourceManager.GetString("INVALID_EMAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The passwords do not match..
+        /// </summary>
+        internal static string PASSWORD_NO_MATCH {
+            get {
+                return ResourceManager.GetString("PASSWORD_NO_MATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon Pauloruberto_Custom_Round_Yosemite_FileBot {
@@ -97,6 +169,33 @@ namespace LoginSystem.Properties {
             get {
                 object obj = ResourceManager.GetObject("Pauloruberto_Custom_Round_Yosemite_PhpStorm", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There seems to be a problem on our end ;(.
+        /// </summary>
+        internal static string SERVER_ERROR {
+            get {
+                return ResourceManager.GetString("SERVER_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to That information you have entered is too short. It must be over three characters!.
+        /// </summary>
+        internal static string SHORT_DATA {
+            get {
+                return ResourceManager.GetString("SHORT_DATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error has happened..
+        /// </summary>
+        internal static string UNKNOWN_ERROR {
+            get {
+                return ResourceManager.GetString("UNKNOWN_ERROR", resourceCulture);
             }
         }
     }

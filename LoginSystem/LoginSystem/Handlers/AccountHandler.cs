@@ -85,7 +85,7 @@ namespace LoginSystem.Handlers
                 _dbHandler.Cmd.ExecuteNonQuery();
                 return AccountStatus.AccountCreated;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 if (_dbHandler.Conn != null)
                     _dbHandler.Conn.Close();

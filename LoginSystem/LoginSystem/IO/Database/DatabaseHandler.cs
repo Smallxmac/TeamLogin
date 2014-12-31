@@ -14,6 +14,7 @@ namespace LoginSystem.IO.Database
         public DatabaseHandler(string connectionString)
         {
             Conn = new MySqlConnection(connectionString);
+            Cmd = new MySqlCommand();
             Cmd.Connection = Conn;
         }
     }

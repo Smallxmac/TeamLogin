@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ConnectionString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Server=71.88.145.225;Database=Login;Uid=sample;Pwd=example;</Value>
+      <Value Profile="(Default)">Server=127.0.0.1;Database=Login;Uid=root;Pwd=root;</Value>
     </Setting>
     <Setting Name="AccountTable" Type="System.String" Scope="Application">
       <Value Profile="(Default)">accounts</Value>

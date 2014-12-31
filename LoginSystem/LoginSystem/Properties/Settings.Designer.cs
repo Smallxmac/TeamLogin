@@ -25,7 +25,7 @@ namespace LoginSystem.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=71.88.145.225;Database=Login;Uid=sample;Pwd=example;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=127.0.0.1;Database=Login;Uid=root;Pwd=root;")]
         public string ConnectionString {
             get {
                 return ((string)(this["ConnectionString"]));
