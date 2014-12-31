@@ -17,9 +17,7 @@ namespace LoginSystem
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new RegisterUI());
             Application.Run(new LoginUI());
-            //Remove comments from the LoginUI and Add them to register for your UI to show.
         }
     }
 }

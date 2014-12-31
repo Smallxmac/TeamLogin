@@ -36,6 +36,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,9 +48,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Pauloruberto-Custom-Round-Yosemite-KeepassX.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -63,7 +69,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\AccountStatus.cs" />
+    <Compile Include="Handlers\AccountHandler.cs" />
     <Compile Include="IO\Flatfile\IniParser.cs" />
+    <Compile Include="Object Models\Account.cs" />
+    <Compile Include="Object Models\User.cs" />
     <Compile Include="UI\AboutUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,6 +113,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="UI\MainUI.resx">
       <DependentUpon>MainUI.cs</DependentUpon>
@@ -111,6 +121,7 @@
     <EmbeddedResource Include="UI\RegisterUI.resx">
       <DependentUpon>RegisterUI.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -128,7 +139,10 @@
     <Folder Include="IO\Database\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Pauloruberto-Custom-Round-Yosemite-KeepassX.ico" />
+    <None Include="Resources\Pauloruberto-Custom-Round-Yosemite-FileBot.ico" />
+    <None Include="Resources\Pauloruberto-Custom-Round-Yosemite-KeepassX.ico" />
+    <None Include="Resources\Pauloruberto-Custom-Round-Yosemite-FileMaker-Pro.ico" />
+    <None Include="Resources\Pauloruberto-Custom-Round-Yosemite-PhpStorm.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

@@ -72,7 +72,6 @@
             this.label1.Size = new System.Drawing.Size(88, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Email/Username:";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -100,7 +99,6 @@
             this.Password_Box.PasswordChar = '*';
             this.Password_Box.Size = new System.Drawing.Size(184, 20);
             this.Password_Box.TabIndex = 6;
-            this.Password_Box.TextChanged += new System.EventHandler(this.Pass_Box_TextChanged);
             // 
             // LoginUI
             // 
