@@ -1,4 +1,4 @@
-﻿namespace LoginSystem
+﻿namespace LoginSystem.UI
 {
     partial class LoginUI
     {
@@ -43,9 +43,10 @@
             this.Login_Button.Location = new System.Drawing.Point(12, 72);
             this.Login_Button.Name = "Login_Button";
             this.Login_Button.Size = new System.Drawing.Size(81, 21);
-            this.Login_Button.TabIndex = 0;
+            this.Login_Button.TabIndex = 3;
             this.Login_Button.Text = "Login";
             this.Login_Button.UseVisualStyleBackColor = true;
+            this.Login_Button.Click += new System.EventHandler(this.Login_Button_Click);
             // 
             // Remember_Check
             // 
@@ -53,7 +54,7 @@
             this.Remember_Check.Location = new System.Drawing.Point(98, 75);
             this.Remember_Check.Name = "Remember_Check";
             this.Remember_Check.Size = new System.Drawing.Size(95, 17);
-            this.Remember_Check.TabIndex = 1;
+            this.Remember_Check.TabIndex = 4;
             this.Remember_Check.Text = "Remember Me";
             this.Remember_Check.UseVisualStyleBackColor = true;
             // 
@@ -87,7 +88,7 @@
             this.Register_Button.Location = new System.Drawing.Point(199, 72);
             this.Register_Button.Name = "Register_Button";
             this.Register_Button.Size = new System.Drawing.Size(91, 21);
-            this.Register_Button.TabIndex = 5;
+            this.Register_Button.TabIndex = 0;
             this.Register_Button.Text = "Register";
             this.Register_Button.UseVisualStyleBackColor = true;
             this.Register_Button.Click += new System.EventHandler(this.Register_Button_Click);
@@ -98,7 +99,7 @@
             this.Password_Box.Name = "Password_Box";
             this.Password_Box.PasswordChar = '*';
             this.Password_Box.Size = new System.Drawing.Size(184, 20);
-            this.Password_Box.TabIndex = 6;
+            this.Password_Box.TabIndex = 2;
             // 
             // LoginUI
             // 
