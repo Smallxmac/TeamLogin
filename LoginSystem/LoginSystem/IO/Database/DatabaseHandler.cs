@@ -11,6 +11,11 @@ namespace LoginSystem.IO.Database
     {
         public MySqlConnection Conn;
         public MySqlCommand Cmd;
+        /// <summary>
+        /// This is the constructor for the Database connection and handler.
+        /// Builds the connection and command link.
+        /// </summary>
+        /// <param name="connectionString">The connection string to the server.</param>
         public DatabaseHandler(string connectionString)
         {
             Conn = new MySqlConnection(connectionString);

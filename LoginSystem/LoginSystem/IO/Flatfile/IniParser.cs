@@ -5,7 +5,7 @@ namespace LoginSystem.IO.Flatfile
 {
     /// <summary>
     /// Simple way to get in put information into an INI file.
-    /// This could be way better, but this is not one of my focues.
+    /// This could be way better, but this is not one of my focus.
     /// </summary>
     class IniParser
     {

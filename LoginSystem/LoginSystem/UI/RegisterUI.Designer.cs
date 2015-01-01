@@ -57,7 +57,7 @@
             this.Register_button.Location = new System.Drawing.Point(145, 106);
             this.Register_button.Name = "Register_button";
             this.Register_button.Size = new System.Drawing.Size(80, 23);
-            this.Register_button.TabIndex = 1;
+            this.Register_button.TabIndex = 5;
             this.Register_button.Text = "Register";
             this.Register_button.UseVisualStyleBackColor = true;
             this.Register_button.Click += new System.EventHandler(this.Register_button_Click);
@@ -77,7 +77,7 @@
             this.Password_Box.Name = "Password_Box";
             this.Password_Box.PasswordChar = '*';
             this.Password_Box.Size = new System.Drawing.Size(137, 20);
-            this.Password_Box.TabIndex = 3;
+            this.Password_Box.TabIndex = 2;
             // 
             // label2
             // 
@@ -112,26 +112,27 @@
             this.PasswordAgain_box.Name = "PasswordAgain_box";
             this.PasswordAgain_box.PasswordChar = '*';
             this.PasswordAgain_box.Size = new System.Drawing.Size(137, 20);
-            this.PasswordAgain_box.TabIndex = 7;
+            this.PasswordAgain_box.TabIndex = 3;
             // 
             // Username_Box
             // 
             this.Username_Box.Location = new System.Drawing.Point(88, 6);
             this.Username_Box.Name = "Username_Box";
             this.Username_Box.Size = new System.Drawing.Size(137, 20);
-            this.Username_Box.TabIndex = 8;
+            this.Username_Box.TabIndex = 1;
             // 
             // Email_Box
             // 
             this.Email_Box.Location = new System.Drawing.Point(88, 74);
             this.Email_Box.Name = "Email_Box";
             this.Email_Box.Size = new System.Drawing.Size(137, 20);
-            this.Email_Box.TabIndex = 9;
+            this.Email_Box.TabIndex = 4;
             // 
             // RegisterUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(241, 141);
             this.Controls.Add(this.Email_Box);
             this.Controls.Add(this.Username_Box);
@@ -143,10 +144,11 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Register_button);
             this.Controls.Add(this.Cancel_button);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RegisterUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "RegisterUI";
+            this.Text = "Register";
             this.Load += new System.EventHandler(this.RegisterUI_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
