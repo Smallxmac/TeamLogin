@@ -44,7 +44,6 @@ namespace LoginSystem.UI
                 {
                     if (email.Contains('@') && email.Contains('.'))
                     {
-                        if(accountHandler == null)
                             accountHandler = new AccountHandler();
                         var results = accountHandler.RegisterAccount(username, password, email);
                         switch (results)
@@ -58,7 +57,7 @@ namespace LoginSystem.UI
                             case AccountStatus.AccountNameUsed:
                             {
                                 MessageBox.Show(this, Resources.ACCOUNT_NAME_EXIST,
-                                    @"Account Username Exist", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    @"Account User name Exist", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 break;
                             }
                             case AccountStatus.AccountEmailUsed:
@@ -69,7 +68,7 @@ namespace LoginSystem.UI
                             }
                             case AccountStatus.ServerError:
                             {
-                                MessageBox.Show(this, Resources.SERVER_ERROR,
+                                MessageBox.Show(this, Resources.SERVER_ERROR + accountHandler.lastError,
                                     @"Server Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 break;
                             }

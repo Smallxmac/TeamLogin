@@ -8,7 +8,7 @@ namespace LoginSystem.Enums
 { 
     /// <summary>
     /// AccountStatus is a set of enums which will be used in the login
-    /// proccess to return information in a readable format.
+    /// process to return information in a readable format.
     /// </summary>
     public enum AccountStatus
     {
