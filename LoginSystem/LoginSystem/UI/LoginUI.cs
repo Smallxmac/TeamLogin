@@ -33,12 +33,6 @@ namespace LoginSystem.UI
             AccountStatus stat = AH.CheckAccount("", "", false);
             String user = Username_Box.Text;
             String pass = Password_Box.Text;
-
-
-            if ()
-            {
-
-            }
         }
 
     }
