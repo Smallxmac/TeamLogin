@@ -30,9 +30,6 @@ namespace LoginSystem.UI
 
         private void Login_Button_Click(object sender, EventArgs e)
         {
-           AH = new Handlers.AccountHandler();
-            var results = AH.CheckAccount("test", "test", false);
-            AccountStatus stat = AH.CheckAccount("", "", false);
             String user = Username_Box.Text;
             String pass = Password_Box.Text;
 
@@ -58,7 +55,7 @@ namespace LoginSystem.UI
                         }
                         case AccountStatus.AccountBanned:
                         {
-                            MessageBox.Show(this, Resources.ACCOUNT_BANNED, @"Account Banned", MessageBoxButtons.OK,
+                            MessageBox.Show(this, Resources.ACCOUNT_BANNED+ AH.BanDateTime.ToShortDateString(), @"Account Banned", MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                             break;
                         }
