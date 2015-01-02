@@ -43,7 +43,7 @@
             this.Login_Button.Location = new System.Drawing.Point(12, 72);
             this.Login_Button.Name = "Login_Button";
             this.Login_Button.Size = new System.Drawing.Size(81, 21);
-            this.Login_Button.TabIndex = 3;
+            this.Login_Button.TabIndex = 4;
             this.Login_Button.Text = "Login";
             this.Login_Button.UseVisualStyleBackColor = true;
             this.Login_Button.Click += new System.EventHandler(this.Login_Button_Click);
@@ -54,7 +54,7 @@
             this.Remember_Check.Location = new System.Drawing.Point(98, 75);
             this.Remember_Check.Name = "Remember_Check";
             this.Remember_Check.Size = new System.Drawing.Size(95, 17);
-            this.Remember_Check.TabIndex = 4;
+            this.Remember_Check.TabIndex = 3;
             this.Remember_Check.Text = "Remember Me";
             this.Remember_Check.UseVisualStyleBackColor = true;
             // 
