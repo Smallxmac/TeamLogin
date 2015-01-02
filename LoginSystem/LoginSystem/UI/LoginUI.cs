@@ -52,7 +52,7 @@ namespace LoginSystem.UI
                         }
                         case AccountStatus.AccountBanned:
                         {
-                            MessageBox.Show(this, Resources.ACCOUNT_BANNED, @"Account Banned", MessageBoxButtons.OK,
+                            MessageBox.Show(this, Resources.ACCOUNT_BANNED+ AH.BanDateTime.ToShortDateString(), @"Account Banned", MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                             break;
                         }

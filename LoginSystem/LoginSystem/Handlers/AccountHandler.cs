@@ -13,8 +13,11 @@ namespace LoginSystem.Handlers
     {
 
         private readonly DatabaseHandler _dbHandler;
-        private readonly string _regQuery;
+        private readonly string _regQuarry;
+        private readonly string _loginQuarry;
+        private readonly string _logEmailQuarry;
         public string lastError;
+        public DateTime BanDateTime;
 
         /// <summary>
         /// Creates a database connection.
@@ -23,7 +26,11 @@ namespace LoginSystem.Handlers
         {
             string table = Properties.Settings.Default.AccountTable;
             _dbHandler = new DatabaseHandler(Properties.Settings.Default.ConnectionString);
-            _regQuery = "INSERT INTO " + table + "(AccountUsername, AccountPassword, AccountEMail, AccountRegisterDate, AccountPremission) VALUES (@username, @password, @email, @date, @permission)";
+            _regQuarry = "INSERT INTO " + table + "(AccountUsername, AccountPassword, AccountEMail, AccountRegisterDate, AccountPremission) VALUES (@username, @password, @email, @date, @permission)";
+            _loginQuarry =
+                "SELECT AccountPassword, AccountActivated, AccountBanned, AccountBanExpire FROM "+ table +" WHERE AccountUsername = @username";
+            _logEmailQuarry =
+                "SELECT AccountPassword, AccountActivated, AccountBanned, AccountBanExpire FROM "+ table +" WHERE AccountEmail = @email";
         }
 
         /// <summary>
@@ -36,9 +43,51 @@ namespace LoginSystem.Handlers
         /// <returns>Returns the status of the account gathered. Statuses are in Enums.AccountStatus</returns>
         public AccountStatus CheckAccount(string username, string password, bool checkingName)
         {
-            if (username.Equals("test") && password.Equals("test") && !checkingName)
-                return AccountStatus.AccountAuthenicated;
+        
+            try
+            {
+                _dbHandler.Conn.Open();
+                _dbHandler.Cmd.CommandText = _loginQuarry;
+                _dbHandler.Cmd.Prepare();
 
+                _dbHandler.Cmd.Parameters.AddWithValue("@username", username);
+                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    if (checkingName)
+                        return AccountStatus.AccountNameUsed;
+                    if (password.Equals(reader.GetString("AccountPassword")))
+                    {
+                        if (reader.GetBoolean("AccountBanned"))
+                        {
+                            BanDateTime = reader.GetDateTime("AccountBanExpire");
+                            return AccountStatus.AccountBanned;
+                        }
+                        else if (!reader.GetBoolean("AccountActivated"))
+                            return AccountStatus.AccountNotActivated;
+                        else
+                            return AccountStatus.AccountAuthenicated;
+                    }
+                    else
+                        return AccountStatus.AccountInvalid;
+                }
+                else
+                    return AccountStatus.AccountInvalid;
+
+            }
+            catch (MySql.Data.MySqlClient.MySqlException exception)
+            {
+                if(_dbHandler != null)
+                _dbHandler.Conn.Close();
+                lastError = exception.Message;
+                return AccountStatus.ServerError;
+            }
+            finally
+            {
+                if (_dbHandler != null)
+                    _dbHandler.Conn.Close();
+            }
+            _dbHandler.Conn.Open();
             return AccountStatus.AccountInvalid;
             //TODO: Add logic code
         }
@@ -53,13 +102,52 @@ namespace LoginSystem.Handlers
         /// <returns>Returns the status of the account gathered. Statuses are in Enums.AccountStatus</returns>
         public AccountStatus CheckAccountEmail(string email, string password, bool checkingName)
         {
-            if(email.Equals("test@test.com")&& password.Equals("test")&& !checkingName)
-                return AccountStatus.AccountAuthenicated;
+            try
+            {
+                _dbHandler.Conn.Open();
+                _dbHandler.Cmd.CommandText = _logEmailQuarry;
+                _dbHandler.Cmd.Prepare();
 
-            return AccountStatus.AccountInvalid;
+                _dbHandler.Cmd.Parameters.AddWithValue("@logEmail", email);
+                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    if (checkingName)
+                        return AccountStatus.AccountEmailUsed;
 
+                    if (password.Equals(reader.GetString("AccountPassword")))
+                    {
+                        if (reader.GetBoolean("AccountBanned"))
+                        {
+                            BanDateTime = reader.GetDateTime("AccountBanExpire");
+                            return AccountStatus.AccountBanned;
+                        }
+                        else if (!reader.GetBoolean("AccountActivated"))
+                            return AccountStatus.AccountNotActivated;
+                        else
+                            return AccountStatus.AccountAuthenicated;
+                    }
+                    else
+                        return AccountStatus.AccountInvalid;
+                }
+                else
+                    return AccountStatus.AccountInvalid;
 
-            //TODO: Add logic code
+            }
+
+            catch (MySql.Data.MySqlClient.MySqlException exception)
+            {
+                if (_dbHandler != null)
+                    _dbHandler.Conn.Close();
+                lastError = exception.Message;
+                return AccountStatus.ServerError;
+            }
+
+            finally
+            {
+                if (_dbHandler != null)
+                    _dbHandler.Conn.Close();
+            }
         }
 
         /// <summary>
@@ -75,7 +163,7 @@ namespace LoginSystem.Handlers
             try
             {
                 _dbHandler.Conn.Open();
-                _dbHandler.Cmd.CommandText = _regQuery;
+                _dbHandler.Cmd.CommandText = _regQuarry;
                 _dbHandler.Cmd.Prepare();
 
                 _dbHandler.Cmd.Parameters.AddWithValue("@username", username);
