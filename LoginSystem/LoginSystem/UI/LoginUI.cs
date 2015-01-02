@@ -21,18 +21,12 @@ namespace LoginSystem.UI
 
         private void Register_Button_Click(object sender, EventArgs e)
         {
-            // Tucker I went ahead and added this so that you know what I did and can do it for aboutUI.
-            // Basicaly it is called Modal window which means you cannot access the parent window until the other window is close.
-            // I did this becuase I do not think that they should access both UIs at the same time.'
             var registerUi = new RegisterUI();
             registerUi.ShowDialog(this);
         }
 
         private void Login_Button_Click(object sender, EventArgs e)
         {
-           AH = new Handlers.AccountHandler();
-            var results = AH.CheckAccount("test", "test", false);
-            AccountStatus stat = AH.CheckAccount("", "", false);
             String user = Username_Box.Text;
             String pass = Password_Box.Text;
 
@@ -40,13 +34,13 @@ namespace LoginSystem.UI
             {
                 if (user.Contains("@") && user.Contains("."))
                 {
-                    //an email
                     AH = new AccountHandler();
-                    Enums.AccountStatus status = AH.CheckAccountEmail(user, pass, false);
+                    var status = AH.CheckAccountEmail(user, pass, false);
                     switch (status)
                     {
                         case AccountStatus.AccountAuthenicated:
                         {
+                            // Do main window later..
                             MessageBox.Show(this, "Welcome", "Welcome to le login");
                             break;
                         }
@@ -87,7 +81,7 @@ namespace LoginSystem.UI
                 else
                 {
                     AH = new AccountHandler();
-                    Enums.AccountStatus status = AH.CheckAccount(user, pass, false);
+                    var status = AH.CheckAccount(user, pass, false);
                     switch (status)
                     {
                         case AccountStatus.AccountAuthenicated:
@@ -125,20 +119,13 @@ namespace LoginSystem.UI
                                     MessageBoxIcon.Error);
                                 break;
                             }
-
                     }
-
-                }
-
-                    
+                }   
             }
-            else
-            {
+            else 
                 MessageBox.Show(this, Resources.SHORT_DATA, @"Too Few Characters", MessageBoxButtons.OK,
-                                 MessageBoxIcon.Error);
-                
-               
-            }
+                                 MessageBoxIcon.Error);     
+            
         }
     }
 }
