@@ -8,5 +8,8 @@
     <Setting Name="AccountTable" Type="System.String" Scope="Application">
       <Value Profile="(Default)">accounts</Value>
     </Setting>
+    <Setting Name="UserTable" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Users</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
