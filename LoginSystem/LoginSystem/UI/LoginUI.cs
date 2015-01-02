@@ -64,7 +64,7 @@ namespace LoginSystem.UI
                         }
                         case AccountStatus.ServerError:
                         {
-                            MessageBox.Show(this, Resources.SERVER_ERROR+ AH.lastError, @"Our Bad", MessageBoxButtons.OK,
+                            MessageBox.Show(this, Resources.SERVER_ERROR+ AH.LastError, @"Our Bad", MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                             break;
                         }
@@ -109,7 +109,7 @@ namespace LoginSystem.UI
                             }
                         case AccountStatus.ServerError:
                             {
-                                MessageBox.Show(this, Resources.SERVER_ERROR + AH.lastError, @"Our Bad", MessageBoxButtons.OK,
+                                MessageBox.Show(this, Resources.SERVER_ERROR + AH.LastError, @"Our Bad", MessageBoxButtons.OK,
                                     MessageBoxIcon.Error);
                                 break;
                             }

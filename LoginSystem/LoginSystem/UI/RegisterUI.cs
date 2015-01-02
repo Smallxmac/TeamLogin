@@ -68,7 +68,7 @@ namespace LoginSystem.UI
                             }
                             case AccountStatus.ServerError:
                             {
-                                MessageBox.Show(this, Resources.SERVER_ERROR + accountHandler.lastError,
+                                MessageBox.Show(this, Resources.SERVER_ERROR + accountHandler.LastError,
                                     @"Server Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 break;
                             }

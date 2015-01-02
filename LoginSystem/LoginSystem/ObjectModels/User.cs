@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LoginSystem.ObjectModels
 {
-    class User
+    public class User
     {
+
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LoginSystem.Enums;
 using LoginSystem.IO.Database;
+using LoginSystem.ObjectModels;
 
 namespace LoginSystem.Handlers
 {
@@ -16,7 +17,8 @@ namespace LoginSystem.Handlers
         private readonly string _regQuarry;
         private readonly string _loginQuarry;
         private readonly string _logEmailQuarry;
-        public string lastError;
+        private readonly string _userQuarry;
+        public string LastError;
         public DateTime BanDateTime;
 
         /// <summary>
@@ -26,11 +28,13 @@ namespace LoginSystem.Handlers
         {
             string table = Properties.Settings.Default.AccountTable;
             _dbHandler = new DatabaseHandler(Properties.Settings.Default.ConnectionString);
-            _regQuarry = "INSERT INTO " + table + "(AccountUsername, AccountPassword, AccountEMail, AccountRegisterDate, AccountPremission) VALUES (@username, @password, @email, @date, @permission)";
+            _regQuarry = 
+                "INSERT INTO " + table + "(AccountUsername, AccountPassword, AccountEMail, AccountActivated, AccountBanned, AccountBanExpire, AccountRegisterDate, AccountPermission) VALUES (@username, @password, @email, @activated, @banned, @banexpire,  @regdate, @permission)";
             _loginQuarry =
-                "SELECT AccountPassword, AccountActivated, AccountBanned, AccountBanExpire FROM "+ table +" WHERE AccountUsername = @username";
+                "SELECT * FROM "+ table +" WHERE AccountUsername = @username";
             _logEmailQuarry =
-                "SELECT AccountPassword, AccountActivated, AccountBanned, AccountBanExpire FROM "+ table +" WHERE AccountEmail = @email";
+                "SELECT * FROM "+ table +" WHERE AccountEmail = @email";
+
         }
 
         /// <summary>
@@ -43,54 +47,33 @@ namespace LoginSystem.Handlers
         /// <returns>Returns the status of the account gathered. Statuses are in Enums.AccountStatus</returns>
         public AccountStatus CheckAccount(string username, string password, bool checkingName)
         {
-        
-            try
-            {
-                _dbHandler.Conn.Open();
-                _dbHandler.Cmd.CommandText = _loginQuarry;
-                _dbHandler.Cmd.Prepare();
+            var account = GetAccount(username);
 
-                _dbHandler.Cmd.Parameters.AddWithValue("@username", username);
-                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
-                if (reader.Read())
+            if (account.AccountEmail != null)
+            {
+                if(account.Error)
+                    return AccountStatus.ServerError;
+
+                if (checkingName)
+                    return AccountStatus.AccountNameUsed;
+
+                if (password.Equals(account.AccountPassword))
                 {
-                    if (checkingName)
-                        return AccountStatus.AccountNameUsed;
-                    if (password.Equals(reader.GetString("AccountPassword")))
+                    if (account.AccountBanned)
                     {
-                        if (reader.GetBoolean("AccountBanned"))
-                        {
-                            BanDateTime = reader.GetDateTime("AccountBanExpire");
-                            return AccountStatus.AccountBanned;
-                        }
-                        else if (!reader.GetBoolean("AccountActivated"))
-                            return AccountStatus.AccountNotActivated;
-                        else
-                            return AccountStatus.AccountAuthenicated;
+                        BanDateTime = account.AccountBanExpire;
+                        return AccountStatus.AccountBanned;
                     }
-                    else
-                        return AccountStatus.AccountInvalid;
-                }
-                else
-                    return AccountStatus.AccountInvalid;
+                    if (!account.AccountActivated)
+                        return AccountStatus.AccountNotActivated;
 
+                    return AccountStatus.AccountAuthenicated;
+                }
+                return AccountStatus.AccountInvalid;
             }
-            catch (MySql.Data.MySqlClient.MySqlException exception)
-            {
-                if(_dbHandler != null)
-                _dbHandler.Conn.Close();
-                lastError = exception.Message;
-                return AccountStatus.ServerError;
-            }
-            finally
-            {
-                if (_dbHandler != null)
-                    _dbHandler.Conn.Close();
-            }
-            _dbHandler.Conn.Open();
             return AccountStatus.AccountInvalid;
-            //TODO: Add logic code
         }
+
 
         /// <summary>
         /// Check the username and password with records in the account database.
@@ -102,52 +85,31 @@ namespace LoginSystem.Handlers
         /// <returns>Returns the status of the account gathered. Statuses are in Enums.AccountStatus</returns>
         public AccountStatus CheckAccountEmail(string email, string password, bool checkingName)
         {
-            try
-            {
-                _dbHandler.Conn.Open();
-                _dbHandler.Cmd.CommandText = _logEmailQuarry;
-                _dbHandler.Cmd.Prepare();
+            var account = GetAccountEmail(email);
 
-                _dbHandler.Cmd.Parameters.AddWithValue("@logEmail", email);
-                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
-                if (reader.Read())
+            if (account.AccountUsername != null)
+            {
+                if(account.Error)
+                    return AccountStatus.ServerError;
+
+                if (checkingName)
+                    return AccountStatus.AccountNameUsed;
+
+                if (password.Equals(account.AccountPassword))
                 {
-                    if (checkingName)
-                        return AccountStatus.AccountEmailUsed;
-
-                    if (password.Equals(reader.GetString("AccountPassword")))
+                    if (account.AccountBanned)
                     {
-                        if (reader.GetBoolean("AccountBanned"))
-                        {
-                            BanDateTime = reader.GetDateTime("AccountBanExpire");
-                            return AccountStatus.AccountBanned;
-                        }
-                        else if (!reader.GetBoolean("AccountActivated"))
-                            return AccountStatus.AccountNotActivated;
-                        else
-                            return AccountStatus.AccountAuthenicated;
+                        BanDateTime = account.AccountBanExpire;
+                        return AccountStatus.AccountBanned;
                     }
-                    else
-                        return AccountStatus.AccountInvalid;
+                    if (!account.AccountActivated)
+                        return AccountStatus.AccountNotActivated;
+
+                    return AccountStatus.AccountAuthenicated;
                 }
-                else
-                    return AccountStatus.AccountInvalid;
-
+                return AccountStatus.AccountInvalid;
             }
-
-            catch (MySql.Data.MySqlClient.MySqlException exception)
-            {
-                if (_dbHandler != null)
-                    _dbHandler.Conn.Close();
-                lastError = exception.Message;
-                return AccountStatus.ServerError;
-            }
-
-            finally
-            {
-                if (_dbHandler != null)
-                    _dbHandler.Conn.Close();
-            }
+            return AccountStatus.AccountInvalid;
         }
 
         /// <summary>
@@ -160,35 +122,169 @@ namespace LoginSystem.Handlers
         /// <returns>Returns the status of registration EX: AccountCreated, Error, or AccountNameUsed</returns>
         public AccountStatus RegisterAccount(string username, string password, string email)
         {
+            if (CheckAccount(username, password, true) != AccountStatus.AccountNameUsed)
+            {
+                if (CheckAccountEmail(email, password, true) != AccountStatus.AccountEmailUsed)
+                {
+                    var account = new Account();
+                    account.AccountUsername = username;
+                    account.AccountPassword = password;
+                    account.AccountEmail = email;
+                    account.AccountActivated = false;
+                    account.AccountBanned = false;
+                    account.AccountRegisterDate = DateTime.Now;
+                    account.AccountPermission = AccountPermission.Normal;
+                    if (SaveAccount(account))
+                        return AccountStatus.AccountCreated;
+
+                    return AccountStatus.ServerError;
+                }
+                return AccountStatus.AccountEmailUsed;
+            }
+            return AccountStatus.AccountNameUsed;
+        }
+
+        /// <summary>
+        /// Gathers the account from the database based on the username.
+        /// </summary>
+        /// <param name="username">The username of the account that will be grabbed.</param>
+        /// <returns>Returns the account in an account object.</returns>
+        public Account GetAccount(string username)
+        {
+            var account = new Account();
+
             try
             {
                 _dbHandler.Conn.Open();
-                _dbHandler.Cmd.CommandText = _regQuarry;
+                _dbHandler.Cmd.Parameters.Clear();
+                _dbHandler.Cmd.CommandText = _loginQuarry;
                 _dbHandler.Cmd.Prepare();
 
                 _dbHandler.Cmd.Parameters.AddWithValue("@username", username);
-                _dbHandler.Cmd.Parameters.AddWithValue("@password", password);
-                _dbHandler.Cmd.Parameters.AddWithValue("@email", email);
-                _dbHandler.Cmd.Parameters.AddWithValue("@date", DateTime.Now);
-                _dbHandler.Cmd.Parameters.AddWithValue("@permission", AccountPermission.Normal.ToString());
+                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
 
-                _dbHandler.Cmd.ExecuteNonQuery();
-                return AccountStatus.AccountCreated;
+                if (reader.Read())
+                {
+                    account.UID = reader.GetInt32("UID");
+                    account.AccountUsername = username;
+                    account.AccountPassword = reader.GetString("AccountPassword");
+                    account.AccountEmail = reader.GetString("AccountEmail");
+                    account.AccountActivated = reader.GetBoolean("AccountActivated");
+                    account.AccountBanned = reader.GetBoolean("AccountBanned");
+                    account.AccountBanExpire = reader.GetDateTime("AccountBanExpire");
+                    account.AccountRegisterDate = reader.GetDateTime("AccountRegisterDate");
+                    account.AccountPermission = (AccountPermission) Enum.Parse(typeof (AccountPermission), reader.GetString("AccountPermission"));
+                }
             }
-            catch (MySql.Data.MySqlClient.MySqlException e)
+
+            catch (MySql.Data.MySqlClient.MySqlException exception)
             {
                 if (_dbHandler.Conn != null)
                     _dbHandler.Conn.Close();
-                lastError = e.Message;
-                return AccountStatus.ServerError;
+                LastError = exception.Message;
+                account.Error = true;
             }
+
             finally
             {
                 if (_dbHandler.Conn != null)
                     _dbHandler.Conn.Close();
             }
-            //TODO: Add logic code
-            return AccountStatus.Error;
+
+            return account;
+        }
+
+        //TODO: Add update option
+        /// <summary>
+        /// Saves an account object in the database
+        /// </summary>
+        /// <param name="account">The account that will be saved.</param>
+        /// <returns>Did it work?</returns>
+        public bool SaveAccount(Account account)
+        {
+            try
+            {
+                _dbHandler.Conn.Open();
+                _dbHandler.Cmd.Parameters.Clear();
+                _dbHandler.Cmd.CommandText = _regQuarry;
+                _dbHandler.Cmd.Prepare();
+
+                _dbHandler.Cmd.Parameters.AddWithValue("@username", account.AccountUsername);
+                _dbHandler.Cmd.Parameters.AddWithValue("@password", account.AccountPassword);
+                _dbHandler.Cmd.Parameters.AddWithValue("@email", account.AccountEmail);
+                _dbHandler.Cmd.Parameters.AddWithValue("@activated", account.AccountActivated);
+                _dbHandler.Cmd.Parameters.AddWithValue("@banned", account.AccountBanned);
+                _dbHandler.Cmd.Parameters.AddWithValue("@banexpire", account.AccountBanExpire);
+                _dbHandler.Cmd.Parameters.AddWithValue("@regdate", account.AccountRegisterDate);
+                _dbHandler.Cmd.Parameters.AddWithValue("@permission", account.AccountPermission.ToString());
+
+                _dbHandler.Cmd.ExecuteNonQuery();
+                return true;
+            }
+
+            catch (MySql.Data.MySqlClient.MySqlException exception)
+            {
+                if (_dbHandler.Conn != null)
+                    _dbHandler.Conn.Close();
+                LastError = exception.Message;
+                return false;
+            }
+
+            finally
+            {
+                if (_dbHandler.Conn != null)
+                    _dbHandler.Conn.Close();
+            }
+        }
+        /// <summary>
+        /// Gathers and account out of the database based on email.
+        /// </summary>
+        /// <param name="email">The account email that will be pulled.</param>
+        /// <returns>Returns the account in an account object.</returns>
+        public Account GetAccountEmail(string email)
+        {
+            var account = new Account();
+
+            try
+            {
+                _dbHandler.Conn.Open();
+                _dbHandler.Cmd.Parameters.Clear();
+                _dbHandler.Cmd.CommandText = _logEmailQuarry;
+                _dbHandler.Cmd.Prepare();
+
+                _dbHandler.Cmd.Parameters.AddWithValue("@email", email);
+                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    account.UID = reader.GetInt32("UID");
+                    account.AccountUsername = reader.GetString("AccountUsername");
+                    account.AccountPassword = reader.GetString("AccountPassword");
+                    account.AccountEmail = email;
+                    account.AccountActivated = reader.GetBoolean("AccountActivated");
+                    account.AccountBanned = reader.GetBoolean("AccountBanned");
+                    if(account.AccountBanned)
+                        account.AccountBanExpire = reader.GetDateTime("AccountBanExpire");
+                    account.AccountRegisterDate = reader.GetDateTime("AccountRegisterDate");
+                    account.AccountPermission = (AccountPermission) Enum.Parse(typeof (AccountPermission), reader.GetString("AccountPermission"));
+                }
+            }
+
+            catch (MySql.Data.MySqlClient.MySqlException exception)
+            {
+                if (_dbHandler.Conn != null)
+                    _dbHandler.Conn.Close();
+                LastError = exception.Message;
+                account.Error = true;
+            }
+
+            finally
+            {
+                if (_dbHandler.Conn != null)
+                    _dbHandler.Conn.Close();
+            }
+
+            return account;
         }
     }
 }
