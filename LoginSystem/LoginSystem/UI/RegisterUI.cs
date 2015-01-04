@@ -23,16 +23,22 @@ namespace LoginSystem.UI
             InitializeComponent();
         }
 
-        private void RegisterUI_Load(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// Pretty simple... This closes the UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Cancel_button_Click(object sender, EventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Register Button Clicked. Gathers all information into a reply packet
+        /// and then sends that packet to the server for processing.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Register_button_Click(object sender, EventArgs e)
         {
             string username = Username_Box.Text;
@@ -81,29 +87,32 @@ namespace LoginSystem.UI
             }
         }
 
+        /// <summary>
+        /// The Delegate to how with cross threading.
+        /// </summary>
         public delegate void InvokeAction();
-
-        public void DoUI(InvokeAction call)
+        /// <summary>
+        /// The void that is called so that we can access the UI like we
+        /// are on the same thread.
+        /// </summary>
+        /// <param name="call">The actions we are telling it to do.</param>
+        public void CrossThreadAction(InvokeAction call)
         {
             if (IsDisposed)
-            {
                 return;
-            }
+
             if (InvokeRequired)
             {
-                try
-                {
-                    Invoke(call);
-                }
+                try { Invoke(call); }
+
                 catch (InvalidOperationException)
                 {
-                    // Handle error
+                    // TODO Handle Errors.
                 }
             }
             else
-            {
                 call();
-            }
+
         }
     }
 }

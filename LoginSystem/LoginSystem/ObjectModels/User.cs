@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace LoginSystem.ObjectModels
 {
+    /// <summary>
+    ///  Masking object for the database table Users.
+    /// </summary>
     public class User
     {
 

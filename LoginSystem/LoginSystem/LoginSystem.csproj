@@ -71,7 +71,7 @@
   <ItemGroup>
     <Compile Include="Enums\AccountPermission.cs" />
     <Compile Include="Enums\AccountStatus.cs" />
-    <Compile Include="IO\IniParser.cs" />
+    <Compile Include="IO\INIFile.cs" />
     <Compile Include="Network\Packets\LoginRequest.cs" />
     <Compile Include="Network\Packets\LoginResponse.cs" />
     <Compile Include="Network\Packets\PacketHandler.cs" />

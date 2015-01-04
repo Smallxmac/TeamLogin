@@ -3,6 +3,9 @@ using LoginSystem.Enums;
 
 namespace LoginSystem.ObjectModels
 {
+    /// <summary>
+    /// This is a masking object of the database table Accounts
+    /// </summary>
     public class Account
     {
         public int UID;

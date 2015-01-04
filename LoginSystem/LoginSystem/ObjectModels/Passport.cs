@@ -9,6 +9,9 @@ using MySql.Data.MySqlClient.Memcached;
 
 namespace LoginSystem.ObjectModels
 {
+    /// <summary>
+    /// Simple passport to hold information that server sends us.
+    /// </summary>
     public class Passport
     {
         public ClientSocket ClientSocket;

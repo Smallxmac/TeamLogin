@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LoginSystem.Enums;
-using LoginSystem.IO.Flatfile;
+using LoginSystem.IO;
 using LoginSystem.ObjectModels;
 using LoginSystem.Properties;
 
@@ -50,17 +50,20 @@ namespace LoginSystem.Network.Packets
             {
                 case AccountStatus.AccountAuthenicated:
                 {
+                    if (Program.UIs.LoginUi.Remember_Check.Checked)
+                    {
+                        INIFile IniPraser = new INIFile("config.ini");
+                        IniPraser.SetValue("Remember", "username", Program.UIs.LoginUi.Username_Box.Text);
+                        IniPraser.SetValue("Remember", "password", Program.UIs.LoginUi.Password_Box.Text);
+                        IniPraser.Flush();
+                    }
                     // Do main window later..
                     MessageBox.Show(Program.UIs.LoginUi, "Welcome", "Welcome to le login");
                     break;
                 }
                 case AccountStatus.AccountActivated:
                 {
-                    if (Program.UIs.LoginUi.Remember_Check.Checked)
-                    {
-                        IniParser.WriteValue("Remember", "username", Program.UIs.LoginUi.Username_Box.Text,"config.ini");
-                        IniParser.WriteValue("Remember", "password", Program.UIs.LoginUi.Password_Box.Text, "config.ini");
-                    }
+                    
                     MessageBox.Show(Program.UIs.LoginUi, Resources.ACCOUNT_ACTIVATED, @"Account Activated",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;

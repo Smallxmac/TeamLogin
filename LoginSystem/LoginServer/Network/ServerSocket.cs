@@ -13,15 +13,18 @@ namespace LoginServer
     public class ServerSocket
     {
         public Socket serverSocket;
-        byte[] buffer = new byte[550];
-        private int i = 0;
+        private byte[] _buffer = new byte[550];
 
+        /// <summary>
+        /// Method used to start the server and listen on a port.
+        /// </summary>
+        /// <param name="port">the port number.</param>
         public void StartServer(int port)
         {
             try
             {
                 serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, port);
+                var ipEndPoint = new IPEndPoint(IPAddress.Any, port);
                 serverSocket.Bind(ipEndPoint);
                 serverSocket.Listen(0);
                 serverSocket.BeginAccept(AcceptCallback, null);
@@ -32,53 +35,62 @@ namespace LoginServer
                 Console.WriteLine("Error starting the server "+ ex.Message);
             }
         }
+
+        /// <summary>
+        /// Sends a byte array a client socket.
+        /// </summary>
+        /// <param name="buffer">the byte array</param>
+        /// <param name="cleintSocket">the client socket.</param>
         public void SendtoClient(byte[] buffer, Socket cleintSocket)
         {
             if (cleintSocket.Connected)
                 cleintSocket.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, SendCallback, null);
         }
+
+        /// <summary>
+        /// The callback for the connection.
+        /// </summary>
+        /// <param name="ar">The AsyncResults</param>
         public void AcceptCallback(IAsyncResult ar)
         {
             try
             {
-                
                 Socket clientSocket = serverSocket.EndAccept(ar);
-                
-
                 serverSocket.BeginAccept(AcceptCallback, null);
-
-                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceviveCallback,
+                _buffer = new byte[clientSocket.ReceiveBufferSize];
+                clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceviveCallback,
                     clientSocket);
-                i++;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error starting the server " + ex.Message);
+                Console.WriteLine("Error in connecting to the server. " + ex.Message);
             }
         }
 
+        /// <summary>
+        /// Callback that is called when data is received.
+        /// </summary>
+        /// <param name="ar">The AsyncResult</param>
         public void ReceviveCallback(IAsyncResult ar)
         {
             try
             {
-                
-                Socket clientSocket = (Socket) ar.AsyncState;
-                
-                short PacketID = BitConverter.ToInt16(buffer, 0);
-                PacketTypes packet = (PacketTypes)Enum.ToObject(typeof(PacketTypes), PacketID);
+                var clientSocket = (Socket) ar.AsyncState;
+                short packetId = BitConverter.ToInt16(_buffer, 0);
+                var packet = (PacketTypes)Enum.ToObject(typeof(PacketTypes), packetId);
+
                 if (packet == PacketTypes.LoginRequest || packet == PacketTypes.RegisterRequest)
                 {
-                    Passport passport = new Passport();
-                    passport.clientSocket = clientSocket;
+                    var passport = new Passport {clientSocket = clientSocket};
                     passport.ip = ((IPEndPoint) passport.clientSocket.RemoteEndPoint).Address.ToString();
-                    PacketHandler.Handle(buffer, passport);
+                    PacketHandler.Handle(_buffer, passport);
                 }
                 else
-                {
-                    PacketHandler.Handle(buffer, Program.clients[BitConverter.ToInt32(buffer, 4)]);
-                }
+                    PacketHandler.Handle(_buffer, Program.clients[BitConverter.ToInt32(_buffer, 4)]);
+                
                 clientSocket.EndReceive(ar);
-                clientSocket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, ReceviveCallback, clientSocket);
+                _buffer = new byte[clientSocket.ReceiveBufferSize];
+                clientSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceviveCallback, clientSocket);
             }
             catch (Exception ex)
             {
@@ -86,6 +98,10 @@ namespace LoginServer
             }
         }
 
+        /// <summary>
+        /// The sending callback.
+        /// </summary>
+        /// <param name="ar">The AsyncResult</param>
         public void SendCallback(IAsyncResult ar)
         {
             var clientSocket = (Socket) ar.AsyncState;

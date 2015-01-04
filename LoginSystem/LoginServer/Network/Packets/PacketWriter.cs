@@ -12,28 +12,48 @@ namespace LoginServer.Network
     public class PacketWriter
     {
         private byte[] _buffer;
+
+        /// <summary>
+        /// Constructor for loading the buffer so that it can be read from locally.
+        /// </summary>
+        /// <param name="buffer">Byte array that will be used to read from.</param>
         public PacketWriter(byte[] buffer)
         {
             _buffer = buffer;
         }
 
-        public PacketWriter(short PacketLength, PacketTypes PacketType)
+        /// <summary>
+        /// Constructor for making a new packet based on information given.
+        /// </summary>
+        /// <param name="packetLength">How big the packet is so the buffer can be resized.</param>
+        /// <param name="packetType">What Type of packet is it.</param>
+        public PacketWriter(short packetLength, PacketTypes packetType)
         {
-            _buffer = new byte[PacketLength];
-            WriteInt16((short) Enum.ToObject(typeof(PacketTypes), PacketType), 0);
-            WriteInt16(PacketLength, 2);
+            _buffer = new byte[packetLength];
+            WriteInt16((short)Enum.ToObject(typeof(PacketTypes), packetType), 0);
+            WriteInt16(packetLength, 2);
         }
 
-        public void WriteHeader(short PacketLength, PacketTypes PacketType)
+        /// <summary>
+        /// Writes the header to the buffer.
+        /// </summary>
+        /// <param name="packetLength">How large the packet is.</param>
+        /// <param name="packetType">The packet Type.</param>
+        public void WriteHeader(short packetLength, PacketTypes packetType)
         {
-            WriteInt16((short)Enum.ToObject(typeof(PacketTypes), PacketType), 0);
-            WriteInt16(PacketLength, 2);
+            WriteInt16((short)Enum.ToObject(typeof(PacketTypes), packetType), 0);
+            WriteInt16(packetLength, 2);
         }
 
+        /// <summary>
+        /// Get the buffer length
+        /// </summary>
+        /// <returns>length of the buffer.</returns>
         public int BufferLength()
         {
             return _buffer.Length;
         }
+
         /// <summary>
         /// Writes a signed 8bit value.
         /// </summary>
@@ -41,8 +61,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteSByte(sbyte value, int offset)
         {
-            (*(sbyte*)(dataPointer + offset)) = value;
+            (*(sbyte*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes a signed 16bit value.
         /// </summary>
@@ -50,8 +71,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteInt16(short value, int offset)
         {
-            (*(short*)(dataPointer + offset)) = value;
+            (*(short*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes a signed 32bit value.
         /// </summary>
@@ -59,8 +81,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteInt32(int value, int offset)
         {
-            (*(int*)(dataPointer + offset)) = value;
+            (*(int*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes a signed 64bit value.
         /// </summary>
@@ -68,8 +91,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteInt64(long value, int offset)
         {
-            (*(long*)(dataPointer + offset)) = value;
+            (*(long*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes an unsigned 8bit value.
         /// </summary>
@@ -77,8 +101,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteByte(byte value, int offset)
         {
-            (*(byte*)(dataPointer + offset)) = value;
+            (*(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes an unsigned 16bit value.
         /// </summary>
@@ -86,8 +111,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteUInt16(ushort value, int offset)
         {
-            (*(ushort*)(dataPointer + offset)) = value;
+            (*(ushort*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes an unsigned 32bit value.
         /// </summary>
@@ -95,8 +121,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteUInt32(uint value, int offset)
         {
-            (*(uint*)(dataPointer + offset)) = value;
+            (*(uint*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Writes an unsigned 64bit value.
         /// </summary>
@@ -104,8 +131,9 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         public unsafe void WriteUInt64(ulong value, int offset)
         {
-            (*(ulong*)(dataPointer + offset)) = value;
+            (*(ulong*)(DataPointer + offset)) = value;
         }
+
         /// <summary>
         /// Reads a signed 8bit value.
         /// </summary>
@@ -113,8 +141,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe sbyte ReadSByte(int offset)
         {
-            return (*(sbyte*)(dataPointer + offset));
+            return (*(sbyte*)(DataPointer + offset));
         }
+
         /// <summary>
         /// Reads a signed 16bit value.
         /// </summary>
@@ -122,8 +151,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe short ReadInt16(int offset)
         {
-            return (*(short*)(dataPointer + offset));
+            return (*(short*)(DataPointer + offset));
         }
+
         /// <summary>
         /// Reads a signed 32bit value.
         /// </summary>
@@ -131,8 +161,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe int ReadInt32(int offset)
         {
-            return (*(int*)(dataPointer + offset));
+            return (*(int*)(DataPointer + offset));
         }
+
         /// <summary>
         /// Reads a signed 64bit value.
         /// </summary>
@@ -140,8 +171,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe long ReadInt64(int offset)
         {
-            return (*(long*)(dataPointer + offset));
+            return (*(long*)(DataPointer + offset));
         }
+
         /// <summary>
         /// Reads an unsigned 8bit value.
         /// </summary>
@@ -149,7 +181,7 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe byte ReadByte(int offset)
         {
-            return (*(byte*)(dataPointer + offset));
+            return (*(DataPointer + offset));
         }
 
         /// <summary>
@@ -158,7 +190,7 @@ namespace LoginServer.Network
         /// <param name="offset">The offset.</param>
         /// <param name="len">The length.</param>
         /// <returns>Returns the array of bytes.</returns>
-        public unsafe byte[] ReadBytes(int offset, int len)
+        public byte[] ReadBytes(int offset, int len)
         {
             byte[] ret = new byte[len];
             for (int i = 0; i < len; i++)
@@ -166,7 +198,12 @@ namespace LoginServer.Network
             return ret;
         }
 
-        public unsafe void WriteBytes(byte[] bytes, int offset)
+        /// <summary>
+        /// Writes an array of bytes
+        /// </summary>
+        /// <param name="bytes">The Byte Array</param>
+        /// <param name="offset">The offset</param>
+        public void WriteBytes(byte[] bytes, int offset)
         {
             for (int i = 0; i < bytes.Length; i++)
                 WriteByte(bytes[i], (offset + i));
@@ -179,8 +216,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe ushort ReadUInt16(int offset)
         {
-            return (*(ushort*)(dataPointer + offset));
+            return (*(ushort*)(DataPointer + offset));
         }
+
         /// <summary>
         /// Reads an unsigned 32bit value.
         /// </summary>
@@ -188,8 +226,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe uint ReadUInt32(int offset)
         {
-            return (*(uint*)(dataPointer + offset));
+            return (*(uint*)(DataPointer + offset));
         }
+
         /// <summary>
         /// Reads an unsigned 64bit value.
         /// </summary>
@@ -197,7 +236,7 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public unsafe ulong ReadUInt64(int offset)
         {
-            return (*(ulong*)(dataPointer + offset));
+            return (*(ulong*)(DataPointer + offset));
         }
 
         /// <summary>
@@ -208,7 +247,7 @@ namespace LoginServer.Network
         public void WriteString(string value, int offset)
         {
             foreach (byte b in GetBytes(value))
-                WriteByte((byte)b, offset++);
+                WriteByte(b, offset++);
         }
 
         /// <summary>
@@ -245,7 +284,7 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public string ReadString(int offset, int length)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
 
             for (int i = 0; i < length; i++)
             {
@@ -256,6 +295,7 @@ namespace LoginServer.Network
 
             return stringBuilder.ToString();
         }
+
         /// <summary>
         /// Reads a string value.
         /// </summary>
@@ -263,9 +303,9 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public string ReadStringFromLength(int offset)
         {
-            byte Length = ReadByte(offset);
+            byte length = ReadByte(offset);
             offset++;
-            return ReadString(offset, Length);
+            return ReadString(offset, length);
         }
 
         /// <summary>
@@ -276,10 +316,10 @@ namespace LoginServer.Network
         /// <returns>Returns the value.</returns>
         public string ReadStringFromLength(int offset, out int nextoffset)
         {
-            byte Length = ReadByte(offset);
+            byte length = ReadByte(offset);
             offset++;
-            nextoffset = (Length + offset);
-            return ReadString(offset, Length);
+            nextoffset = (length + offset);
+            return ReadString(offset, length);
         }
 
         /// <summary>
@@ -302,19 +342,28 @@ namespace LoginServer.Network
             return (ReadByte(offset) > 0);
         }
 
+        /// <summary>
+        /// Builds the current information into a byte Array.
+        /// </summary>
+        /// <returns>The Byte array</returns>
         public byte[] Build()
         {
             return _buffer;
         }
 
+        /// <summary>
+        /// Converts the current information into a byte array that is in string format.
+        /// </summary>
+        /// <returns>The string of the array.</returns>
         public override string ToString()
         {
             return BitConverter.ToString(_buffer);
         }
+
         /// <summary>
         /// Gets the pointer associated with the packet.
         /// </summary>
-        public unsafe byte* dataPointer
+        public unsafe byte* DataPointer
         {
             get
             {
@@ -322,6 +371,7 @@ namespace LoginServer.Network
                     return pointer;
             }
         }
+
         /// <summary>
         /// Gets the bytes whom the string represents.
         /// </summary>

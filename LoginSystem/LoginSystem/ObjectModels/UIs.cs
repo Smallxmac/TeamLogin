@@ -9,6 +9,9 @@ namespace LoginSystem.ObjectModels
 {
     public class UIs
     {
+        /// <summary>
+        /// Collections of all of UIs so that I can access them remotely.
+        /// </summary>
         public LoginUI LoginUi;
         public RegisterUI RegisterUi;
         public MainUI MainUi;
