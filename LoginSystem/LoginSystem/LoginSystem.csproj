@@ -37,6 +37,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -70,10 +71,19 @@
   <ItemGroup>
     <Compile Include="Enums\AccountPermission.cs" />
     <Compile Include="Enums\AccountStatus.cs" />
-    <Compile Include="Handlers\AccountHandler.cs" />
-    <Compile Include="IO\Database\DatabaseHandler.cs" />
-    <Compile Include="IO\Flatfile\IniParser.cs" />
+    <Compile Include="IO\IniParser.cs" />
+    <Compile Include="Network\Packets\LoginRequest.cs" />
+    <Compile Include="Network\Packets\LoginResponse.cs" />
+    <Compile Include="Network\Packets\PacketHandler.cs" />
+    <Compile Include="Enums\PacketTypes.cs" />
+    <Compile Include="Network\Packets\PacketWriter.cs" />
+    <Compile Include="Network\Packets\RegiesterRequest.cs" />
+    <Compile Include="Network\Packets\RegisterResponse.cs" />
+    <Compile Include="Network\Packets\ValidationRequest.cs" />
+    <Compile Include="Network\Sockets\ClientSocket.cs" />
     <Compile Include="ObjectModels\Account.cs" />
+    <Compile Include="ObjectModels\Passport.cs" />
+    <Compile Include="ObjectModels\UIs.cs" />
     <Compile Include="ObjectModels\User.cs" />
     <Compile Include="UI\AboutUI.cs">
       <SubType>Form</SubType>

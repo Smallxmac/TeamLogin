@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ACCOUNT_ACTIVATED" xml:space="preserve">
+    <value>Awesome your account has been activated, please relogin.</value>
+  </data>
   <data name="ACCOUNT_BANNED" xml:space="preserve">
     <value>Your account has been banned until: </value>
   </data>
@@ -133,7 +136,7 @@
     <value>The username you are trying to register has been taken.</value>
   </data>
   <data name="ACCOUNT_NOT_ACTIVATED" xml:space="preserve">
-    <value>Your account has not been activated just yet.</value>
+    <value>Your account has not been activated just yet. Would you like to resend the email?</value>
   </data>
   <data name="INVALID_EMAIL" xml:space="preserve">
     <value>The email you have provided does not seem to be valid.</value>

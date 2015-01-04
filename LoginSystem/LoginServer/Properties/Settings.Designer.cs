@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LoginSystem.Properties {
+namespace LoginServer.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -56,27 +56,6 @@ namespace LoginSystem.Properties {
         public string ConfigTable {
             get {
                 return ((string)(this["ConfigTable"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("71.88.145.225")]
-        public string ServerIP {
-            get {
-                return ((string)(this["ServerIP"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9950")]
-        public int ServerPort {
-            get {
-                return ((int)(this["ServerPort"]));
-            }
-            set {
-                this["ServerPort"] = value;
             }
         }
     }

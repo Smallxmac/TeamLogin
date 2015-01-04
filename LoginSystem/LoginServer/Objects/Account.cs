@@ -1,7 +1,11 @@
 ﻿using System;
-using LoginSystem.Enums;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using LoginServer.Enums;
 
-namespace LoginSystem.ObjectModels
+namespace LoginServer.Objects
 {
     public class Account
     {

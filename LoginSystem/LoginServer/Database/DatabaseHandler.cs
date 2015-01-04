@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
-namespace LoginSystem.IO.Database
+namespace LoginServer.Database
 {
     public class DatabaseHandler
     {

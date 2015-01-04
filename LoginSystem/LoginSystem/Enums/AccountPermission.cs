@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LoginSystem.Enums
 {
-    public enum AccountPermission
+    public enum AccountPermission : byte
     {
         Error,
         Normal,

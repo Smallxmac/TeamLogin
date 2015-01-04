@@ -1,14 +1,19 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Net.Sockets;
+using System.Threading;
 using System.Windows.Forms;
-using LoginSystem.Enums;
-using LoginSystem.Handlers;
+using LoginSystem.IO;
+using LoginSystem.IO.Flatfile;
+using LoginSystem.Network.Packets;
+using LoginSystem.Network.Sockets;
+using LoginSystem.ObjectModels;
 using LoginSystem.Properties;
 
 namespace LoginSystem.UI
 {
     public partial class LoginUI : Form
     {
-        Handlers.AccountHandler AH;
         public LoginUI()
         {
             InitializeComponent();
@@ -16,13 +21,14 @@ namespace LoginSystem.UI
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            //TODO Load info from remember me
+            Username_Box.Text = IniParser.ReadValue("Remember", "username", "config.ini");
+            Password_Box.Text = IniParser.ReadValue("Remember", "password", "config.ini");
         }
 
         private void Register_Button_Click(object sender, EventArgs e)
         {
-            var registerUi = new RegisterUI();
-            registerUi.ShowDialog(this);
+            Program.UIs.RegisterUi = new RegisterUI();
+            Program.UIs.RegisterUi.ShowDialog(this);
         }
 
         private void Login_Button_Click(object sender, EventArgs e)
@@ -34,92 +40,38 @@ namespace LoginSystem.UI
             {
                 if (user.Contains("@") && user.Contains("."))
                 {
-                    AH = new AccountHandler();
-                    var status = AH.CheckAccountEmail(user, pass, false);
-                    switch (status)
+                    if (Program.passport.ClientSocket == null)
                     {
-                        case AccountStatus.AccountAuthenicated:
-                        {
-                            // Do main window later..
-                            MessageBox.Show(this, "Welcome", "Welcome to le login");
-                            break;
-                        }
-                        case AccountStatus.AccountInvalid:
-                        {
-                            MessageBox.Show(this, Resources.ACCOUNT_INVALID, @"Account Info Invalid", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                            break;
-                        }
-                        case AccountStatus.AccountBanned:
-                        {
-                            MessageBox.Show(this, Resources.ACCOUNT_BANNED+ AH.BanDateTime.ToShortDateString(), @"Account Banned", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                            break;
-                        }
-                        case AccountStatus.AccountNotActivated:
-                        {
-                            MessageBox.Show(this, Resources.ACCOUNT_NOT_ACTIVATED, @"Account Not Activated", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                            break;
-                        }
-                        case AccountStatus.ServerError:
-                        {
-                            MessageBox.Show(this, Resources.SERVER_ERROR+ AH.LastError, @"Our Bad", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                            break;
-                        }
-                        default:
-                        {
-                            MessageBox.Show(this, Resources.UNKNOWN_ERROR, @"I Really Dont Know What Just Happened", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                            break;
-                        }
-
+                        var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        Program.passport.ClientSocket = new ClientSocket(socket);
+                        Program.passport.ClientSocket.Connect(Settings.Default.ServerIP, Settings.Default.ServerPort);
                     }
-
+                    LoginRequest request = new LoginRequest((short) (user.Length + pass.Length + 8 + 3),
+                        PacketTypes.LoginRequest);
+                    
+                    request.Username = "NONE";
+                    request.Password = pass;
+                    request.Email = user;
+                    Program.passport.ClientSocket.SendtoServer(request.Build());
+                    Login_Button.Enabled = false;
                 }
                 else
                 {
-                    AH = new AccountHandler();
-                    var status = AH.CheckAccount(user, pass, false);
-                    switch (status)
+                    if (Program.passport.ClientSocket == null)
                     {
-                        case AccountStatus.AccountAuthenicated:
-                            {
-                                MessageBox.Show(this, "Welcome", "Welcome to le login");
-                                break;
-                            }
-                        case AccountStatus.AccountInvalid:
-                            {
-                                MessageBox.Show(this, Resources.ACCOUNT_INVALID, @"Account Info Invalid", MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                                break;
-                            }
-                        case AccountStatus.AccountBanned:
-                            {
-                                MessageBox.Show(this, Resources.ACCOUNT_BANNED, @"Account Banned", MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                                break;
-                            }
-                        case AccountStatus.AccountNotActivated:
-                            {
-                                MessageBox.Show(this, Resources.ACCOUNT_NOT_ACTIVATED, @"Account Not Activated", MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                                break;
-                            }
-                        case AccountStatus.ServerError:
-                            {
-                                MessageBox.Show(this, Resources.SERVER_ERROR + AH.LastError, @"Our Bad", MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                                break;
-                            }
-                        default:
-                            {
-                                MessageBox.Show(this, Resources.UNKNOWN_ERROR, @"I Really Dont Know What Just Happened", MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
-                                break;
-                            }
+                        var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        Program.passport.ClientSocket = new ClientSocket(socket);
+                        Program.passport.ClientSocket.Connect(Settings.Default.ServerIP, Settings.Default.ServerPort);
                     }
+                    LoginRequest request = new LoginRequest((short) (user.Length + pass.Length + 8 + 3),
+                        PacketTypes.LoginRequest);
+
+                    request.Username = user;
+                    request.Password = pass;
+                    request.Email = "NONE";
+                    Thread.Sleep(50);// I cannot find out why it won't accept my data atm, This is a temp fix...
+                    Program.passport.ClientSocket.SendtoServer(request.Build());
+                    Login_Button.Enabled = false;
                 }   
             }
             else 
@@ -127,5 +79,30 @@ namespace LoginSystem.UI
                                  MessageBoxIcon.Error);     
             
         }
+
+        public delegate void InvokeAction();
+        public void DoUI(InvokeAction call)
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+            if (InvokeRequired)
+            {
+                try
+                {
+                    Invoke(call);
+                }
+                catch (InvalidOperationException)
+                {
+                    // Handle error
+                }
+            }
+            else
+            {
+                call();
+            }
+        }
+
     }
 }

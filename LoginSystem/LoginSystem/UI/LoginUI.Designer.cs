@@ -126,13 +126,13 @@
 
         #endregion
 
-        private System.Windows.Forms.Button Login_Button;
-        private System.Windows.Forms.CheckBox Remember_Check;
-        private System.Windows.Forms.TextBox Username_Box;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button Register_Button;
-        private System.Windows.Forms.TextBox Password_Box;
+        public System.Windows.Forms.Button Login_Button;
+        public System.Windows.Forms.CheckBox Remember_Check;
+        public System.Windows.Forms.TextBox Username_Box;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Button Register_Button;
+        public System.Windows.Forms.TextBox Password_Box;
     }
 }
 

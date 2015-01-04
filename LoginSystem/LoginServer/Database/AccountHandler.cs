@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using LoginSystem.Enums;
-using LoginSystem.IO.Database;
-using LoginSystem.ObjectModels;
+using LoginServer.Enums;
+using LoginServer.IO;
+using LoginServer.Objects;
 
-namespace LoginSystem.Handlers
+namespace LoginServer.Database
 {
     public class AccountHandler
     {
@@ -17,7 +16,9 @@ namespace LoginSystem.Handlers
         private readonly string _regQuarry;
         private readonly string _loginQuarry;
         private readonly string _logEmailQuarry;
-        private readonly string _userQuarry;
+        private readonly string _logIdQuarry;
+        private readonly string _updateQuarry;
+
         public string LastError;
         public DateTime BanDateTime;
 
@@ -26,14 +27,19 @@ namespace LoginSystem.Handlers
         /// </summary>
         public AccountHandler()
         {
+            
             string table = Properties.Settings.Default.AccountTable;
             _dbHandler = new DatabaseHandler(Properties.Settings.Default.ConnectionString);
-            _regQuarry = 
-                "INSERT INTO " + table + "(AccountUsername, AccountPassword, AccountEMail, AccountActivated, AccountBanned, AccountBanExpire, AccountRegisterDate, AccountPermission) VALUES (@username, @password, @email, @activated, @banned, @banexpire,  @regdate, @permission)";
+            _regQuarry =
+                "INSERT INTO " + table + "(AccountUsername, AccountPassword, AccountEmail, AccountActivated, AccountBanned, AccountBanExpire, AccountRegisterDate, AccountPermission, AccountActivationCode) VALUES (@username, @password, @email, @activated, @banned, @banexpire,  @regdate, @permission, @code)";
             _loginQuarry =
-                "SELECT * FROM "+ table +" WHERE AccountUsername = @username";
+                "SELECT * FROM " + table + " WHERE AccountUsername = @username";
             _logEmailQuarry =
-                "SELECT * FROM "+ table +" WHERE AccountEmail = @email";
+                "SELECT * FROM " + table + " WHERE AccountEmail = @email";
+            _logIdQuarry =
+                "SELECT * FROM " + table + " WHERE UID = @id";
+            _updateQuarry = "UPDATE " + table +
+                            " SET AccountPassword = @password, AccountEmail = @email, AccountActivated = @activated, AccountBanned = @banned, AccountBanExpire = @banexpire, AccountPermission = @permission WHERE AccountUsername = @username";
 
         }
 
@@ -51,7 +57,7 @@ namespace LoginSystem.Handlers
 
             if (account.AccountEmail != null)
             {
-                if(account.Error)
+                if (account.Error)
                     return AccountStatus.ServerError;
 
                 if (checkingName)
@@ -68,6 +74,14 @@ namespace LoginSystem.Handlers
                         return AccountStatus.AccountNotActivated;
 
                     return AccountStatus.AccountAuthenicated;
+                }
+                if (password.Equals(account.AccountActivationCode) && !account.AccountActivated)
+                {
+                    account.AccountActivated = true;
+                    if (SaveAccount(account))
+                        return AccountStatus.AccountActivated;
+
+                    return AccountStatus.ServerError;
                 }
                 return AccountStatus.AccountInvalid;
             }
@@ -89,11 +103,11 @@ namespace LoginSystem.Handlers
 
             if (account.AccountUsername != null)
             {
-                if(account.Error)
+                if (account.Error)
                     return AccountStatus.ServerError;
 
                 if (checkingName)
-                    return AccountStatus.AccountNameUsed;
+                    return AccountStatus.AccountEmailUsed;
 
                 if (password.Equals(account.AccountPassword))
                 {
@@ -106,6 +120,14 @@ namespace LoginSystem.Handlers
                         return AccountStatus.AccountNotActivated;
 
                     return AccountStatus.AccountAuthenicated;
+                }
+                if (password.Equals(account.AccountActivationCode) && !account.AccountActivated)
+                {
+                    account.AccountActivated = true;
+                    if (SaveAccount(account))
+                        return AccountStatus.AccountActivated;
+
+                    return AccountStatus.ServerError;
                 }
                 return AccountStatus.AccountInvalid;
             }
@@ -126,6 +148,7 @@ namespace LoginSystem.Handlers
             {
                 if (CheckAccountEmail(email, password, true) != AccountStatus.AccountEmailUsed)
                 {
+
                     var account = new Account();
                     account.AccountUsername = username;
                     account.AccountPassword = password;
@@ -134,9 +157,13 @@ namespace LoginSystem.Handlers
                     account.AccountBanned = false;
                     account.AccountRegisterDate = DateTime.Now;
                     account.AccountPermission = AccountPermission.Normal;
-                    if (SaveAccount(account))
-                        return AccountStatus.AccountCreated;
+                    account.AccountActivationCode = Guid.NewGuid().ToString();
 
+                    if (SaveAccount(account))
+                    {
+                        EmailSender.SendVerification(account);
+                        return AccountStatus.AccountCreated;
+                    }
                     return AccountStatus.ServerError;
                 }
                 return AccountStatus.AccountEmailUsed;
@@ -171,9 +198,11 @@ namespace LoginSystem.Handlers
                     account.AccountEmail = reader.GetString("AccountEmail");
                     account.AccountActivated = reader.GetBoolean("AccountActivated");
                     account.AccountBanned = reader.GetBoolean("AccountBanned");
-                    account.AccountBanExpire = reader.GetDateTime("AccountBanExpire");
+                    if (account.AccountBanned)
+                        account.AccountBanExpire = reader.GetDateTime("AccountBanExpire");
                     account.AccountRegisterDate = reader.GetDateTime("AccountRegisterDate");
-                    account.AccountPermission = (AccountPermission) Enum.Parse(typeof (AccountPermission), reader.GetString("AccountPermission"));
+                    account.AccountPermission = (AccountPermission)Enum.Parse(typeof(AccountPermission), reader.GetString("AccountPermission"));
+                    account.AccountActivationCode = reader.GetString("AccountActivationCode");
                 }
             }
 
@@ -194,9 +223,9 @@ namespace LoginSystem.Handlers
             return account;
         }
 
-        //TODO: Add update option
         /// <summary>
         /// Saves an account object in the database
+        /// If the account exist it will update it.
         /// </summary>
         /// <param name="account">The account that will be saved.</param>
         /// <returns>Did it work?</returns>
@@ -204,6 +233,24 @@ namespace LoginSystem.Handlers
         {
             try
             {
+                if (CheckAccount(account.AccountUsername, account.AccountPassword, true) ==
+                    AccountStatus.AccountNameUsed)
+                {
+                    //" SET AccountPassword = @password, AccountEmail = @email, AccountActivated = @activated, AccountBanned = @banned, AccountBanExpire = @banexpire, AccountPermission = @permission WHERE AccountUsername = @username";
+                    _dbHandler.Conn.Open();
+                    _dbHandler.Cmd.Parameters.Clear();
+                    _dbHandler.Cmd.CommandText = _updateQuarry;
+                    _dbHandler.Cmd.Parameters.AddWithValue("@password", account.AccountPassword);
+                    _dbHandler.Cmd.Parameters.AddWithValue("@email", account.AccountEmail);
+                    _dbHandler.Cmd.Parameters.AddWithValue("@activated", account.AccountActivated);
+                    _dbHandler.Cmd.Parameters.AddWithValue("@banned", account.AccountBanned);
+                    _dbHandler.Cmd.Parameters.AddWithValue("@banexpire", account.AccountBanExpire);
+                    _dbHandler.Cmd.Parameters.AddWithValue("@permission", account.AccountPermission.ToString());
+                    _dbHandler.Cmd.Parameters.AddWithValue("@username", account.AccountUsername);
+
+                    _dbHandler.Cmd.ExecuteNonQuery();
+                    return true;
+                }
                 _dbHandler.Conn.Open();
                 _dbHandler.Cmd.Parameters.Clear();
                 _dbHandler.Cmd.CommandText = _regQuarry;
@@ -217,6 +264,7 @@ namespace LoginSystem.Handlers
                 _dbHandler.Cmd.Parameters.AddWithValue("@banexpire", account.AccountBanExpire);
                 _dbHandler.Cmd.Parameters.AddWithValue("@regdate", account.AccountRegisterDate);
                 _dbHandler.Cmd.Parameters.AddWithValue("@permission", account.AccountPermission.ToString());
+                _dbHandler.Cmd.Parameters.AddWithValue("@code", account.AccountActivationCode);
 
                 _dbHandler.Cmd.ExecuteNonQuery();
                 return true;
@@ -235,6 +283,57 @@ namespace LoginSystem.Handlers
                 if (_dbHandler.Conn != null)
                     _dbHandler.Conn.Close();
             }
+        }
+        /// <summary>
+        /// Gathers and account out of the database based on account Id
+        /// </summary>
+        /// <param name="email">The account email that will be pulled.</param>
+        /// <returns>Returns the account in an account object.</returns>
+        public Account GetAccountId(int id)
+        {
+            var account = new Account();
+
+            try
+            {
+                _dbHandler.Conn.Open();
+                _dbHandler.Cmd.Parameters.Clear();
+                _dbHandler.Cmd.CommandText = _logIdQuarry;
+                _dbHandler.Cmd.Prepare();
+
+                _dbHandler.Cmd.Parameters.AddWithValue("@id", id);
+                MySql.Data.MySqlClient.MySqlDataReader reader = _dbHandler.Cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    account.UID = id;
+                    account.AccountUsername = reader.GetString("AccountUsername");
+                    account.AccountPassword = reader.GetString("AccountPassword");
+                    account.AccountEmail = reader.GetString("AccountEmail");
+                    account.AccountActivated = reader.GetBoolean("AccountActivated");
+                    account.AccountBanned = reader.GetBoolean("AccountBanned");
+                    if (account.AccountBanned)
+                        account.AccountBanExpire = reader.GetDateTime("AccountBanExpire");
+                    account.AccountRegisterDate = reader.GetDateTime("AccountRegisterDate");
+                    account.AccountPermission = (AccountPermission)Enum.Parse(typeof(AccountPermission), reader.GetString("AccountPermission"));
+                    account.AccountActivationCode = reader.GetString("AccountActivationCode");
+                }
+            }
+
+            catch (MySql.Data.MySqlClient.MySqlException exception)
+            {
+                if (_dbHandler.Conn != null)
+                    _dbHandler.Conn.Close();
+                LastError = exception.Message;
+                account.Error = true;
+            }
+
+            finally
+            {
+                if (_dbHandler.Conn != null)
+                    _dbHandler.Conn.Close();
+            }
+
+            return account;
         }
         /// <summary>
         /// Gathers and account out of the database based on email.
@@ -263,10 +362,11 @@ namespace LoginSystem.Handlers
                     account.AccountEmail = email;
                     account.AccountActivated = reader.GetBoolean("AccountActivated");
                     account.AccountBanned = reader.GetBoolean("AccountBanned");
-                    if(account.AccountBanned)
+                    if (account.AccountBanned)
                         account.AccountBanExpire = reader.GetDateTime("AccountBanExpire");
                     account.AccountRegisterDate = reader.GetDateTime("AccountRegisterDate");
-                    account.AccountPermission = (AccountPermission) Enum.Parse(typeof (AccountPermission), reader.GetString("AccountPermission"));
+                    account.AccountPermission = (AccountPermission)Enum.Parse(typeof(AccountPermission), reader.GetString("AccountPermission"));
+                    account.AccountActivationCode = reader.GetString("AccountActivationCode");
                 }
             }
 

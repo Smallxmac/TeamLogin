@@ -157,15 +157,15 @@
 
         #endregion
 
-        private System.Windows.Forms.Button Cancel_button;
-        private System.Windows.Forms.Button Register_button;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox Password_Box;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox PasswordAgain_box;
-        private System.Windows.Forms.TextBox Username_Box;
-        private System.Windows.Forms.TextBox Email_Box;
+        public System.Windows.Forms.Button Cancel_button;
+        public System.Windows.Forms.Button Register_button;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox Password_Box;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.TextBox PasswordAgain_box;
+        public System.Windows.Forms.TextBox Username_Box;
+        public System.Windows.Forms.TextBox Email_Box;
     }
 }

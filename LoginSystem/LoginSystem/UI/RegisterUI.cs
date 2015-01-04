@@ -4,18 +4,20 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LoginSystem.Enums;
-using LoginSystem.Handlers;
+using LoginSystem.Network.Packets;
+using LoginSystem.Network.Sockets;
 using LoginSystem.Properties;
 
 namespace LoginSystem.UI
 {
     public partial class RegisterUI : Form
     {
-        private AccountHandler accountHandler;
         public RegisterUI()
         {
             InitializeComponent();
@@ -44,41 +46,20 @@ namespace LoginSystem.UI
                 {
                     if (email.Contains('@') && email.Contains('.'))
                     {
-                            accountHandler = new AccountHandler();
-                        var results = accountHandler.RegisterAccount(username, password, email);
-                        switch (results)
+                        Register_button.Enabled = false;
+                        if (Program.passport.ClientSocket == null)
                         {
-                            case AccountStatus.AccountCreated:
-                            {
-                                MessageBox.Show(this, Resources.ACCOUNT_CREATED,
-                                    @"Account Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                break;
-                            }
-                            case AccountStatus.AccountNameUsed:
-                            {
-                                MessageBox.Show(this, Resources.ACCOUNT_NAME_EXIST,
-                                    @"Account User name Exist", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                break;
-                            }
-                            case AccountStatus.AccountEmailUsed:
-                            {
-                                MessageBox.Show(this, Resources.ACCOUNT_EMAIL_EXIST,
-                                    @"Account Email Exist", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                break;
-                            }
-                            case AccountStatus.ServerError:
-                            {
-                                MessageBox.Show(this, Resources.SERVER_ERROR + accountHandler.LastError,
-                                    @"Server Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                break;
-                            }
-                            default:
-                            {
-                                MessageBox.Show(this, Resources.UNKNOWN_ERROR,
-                                    @"Unknown Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                break;
-                            }
+                            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                            Program.passport.ClientSocket = new ClientSocket(socket);
+                            Program.passport.ClientSocket.Connect(Settings.Default.ServerIP, Settings.Default.ServerPort);
                         }
+                        var request = new RegiesterRequest((short) (7 + email.Length + username.Length + password.Length),
+                            PacketTypes.RegisterRequest);
+                        request.Username = username;
+                        request.Password = password;
+                        request.Email = email;
+                        Thread.Sleep(50);// Another temp fix
+                        Program.passport.ClientSocket.SendtoServer(request.Build());
 
                     }
                     else
@@ -97,6 +78,31 @@ namespace LoginSystem.UI
             {
                 MessageBox.Show(this, Resources.SHORT_DATA,
                     @"Invaild Information", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public delegate void InvokeAction();
+
+        public void DoUI(InvokeAction call)
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+            if (InvokeRequired)
+            {
+                try
+                {
+                    Invoke(call);
+                }
+                catch (InvalidOperationException)
+                {
+                    // Handle error
+                }
+            }
+            else
+            {
+                call();
             }
         }
     }
