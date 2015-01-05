@@ -9,15 +9,27 @@ namespace LoginServer.Network.Packets
 {
     public class RegisterResponse : PacketWriter
     {
+        /// <summary>
+        /// The constructor that is used to read the byte array.
+        /// </summary>
+        /// <param name="buffer">The byte array</param>
         public RegisterResponse(byte[] buffer) : base(buffer)
         {
         }
 
-        public RegisterResponse(short PacketLength, PacketTypes PacketType) : base(PacketLength, PacketType)
+        /// <summary>
+        /// Constructor that is used to create a new packet.
+        /// </summary>
+        /// <param name="packetLength">The Packet Length</param>
+        /// <param name="packetType">The Packet Type.</param>
+        public RegisterResponse(short packetLength, PacketTypes packetType) : base(packetLength, packetType)
         {
-            WriteHeader(PacketLength, PacketType);
+            WriteHeader(packetLength, packetType);
         }
 
+        /// <summary>
+        /// The register status of the account.
+        /// </summary>
         public AccountStatus RegisterStatus
         {
             set { WriteInt16((short)value, 4); }

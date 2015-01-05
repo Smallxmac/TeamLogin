@@ -81,8 +81,8 @@ namespace LoginServer
 
                 if (packet == PacketTypes.LoginRequest || packet == PacketTypes.RegisterRequest)
                 {
-                    var passport = new Passport {clientSocket = clientSocket};
-                    passport.ip = ((IPEndPoint) passport.clientSocket.RemoteEndPoint).Address.ToString();
+                    var passport = new Passport {ClientSocket = clientSocket};
+                    passport.Ip = ((IPEndPoint) passport.ClientSocket.RemoteEndPoint).Address.ToString();
                     PacketHandler.Handle(_buffer, passport);
                 }
                 else

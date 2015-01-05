@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LoginSystem.Network.Packets
 {
+
     /// <summary>
     /// The Packets that the server and client send to each other.
     /// Made into Enum to help with visualizing the Ids.

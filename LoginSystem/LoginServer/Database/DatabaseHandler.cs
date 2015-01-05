@@ -11,6 +11,7 @@ namespace LoginServer.Database
     {
         public MySqlConnection Conn;
         public MySqlCommand Cmd;
+
         /// <summary>
         /// This is the constructor for the Database connection and handler.
         /// Builds the connection and command link.

@@ -12,10 +12,19 @@ namespace LoginServer.Database
         public string LastError;
         private readonly DatabaseHandler _dbHandler;
 
+        /// <summary>
+        /// Constructor for building the database handler.
+        /// </summary>
+        /// <param name="connectionString"></param>
         public ConfigHandler(string connectionString)
         {
             _dbHandler = new DatabaseHandler(connectionString);
         }
+
+        /// <summary>
+        /// Loads all of the keys and values from the config table to a Dictionary.
+        /// </summary>
+        /// <returns>True if it worked, false if it did not. PS LastError has the error message in it.</returns>
         public bool LoadConfig()
         {
             try

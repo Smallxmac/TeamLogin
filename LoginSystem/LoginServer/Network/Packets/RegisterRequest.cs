@@ -42,6 +42,7 @@ namespace LoginServer.Network.Packets
             set { WriteStringWithLength(value, 4, out _userNextOffset); }
             get { return ReadStringFromLength(4, out _userNextOffset); }
         }
+
         /// <summary>
         /// The password of the requested register.
         /// </summary>
@@ -50,6 +51,7 @@ namespace LoginServer.Network.Packets
             set { WriteStringWithLength(value, _userNextOffset, out _passNextOffset); }
             get { return ReadStringFromLength(_userNextOffset, out _passNextOffset); }
         }
+
         /// <summary>
         /// The email of the requested register.
         /// </summary>
@@ -59,12 +61,17 @@ namespace LoginServer.Network.Packets
             get { return ReadStringFromLength(_passNextOffset); }
         }
 
+        /// <summary>
+        /// Handler used to handle the RegisterRequest Packet.
+        /// </summary>
+        /// <param name="request">Instance of the RegisterRequest with the information already.</param>
+        /// <param name="passport">Client Passport.</param>
         public void Handle(RegiesterRequest request, Passport passport)
         {
             var accountHandler = new AccountHandler();
             var reply = new RegisterResponse(6, PacketTypes.RegisterResponse);
             reply.RegisterStatus = accountHandler.RegisterAccount(request.Username, request.Password, request.Email);
-            passport.clientSocket.Send(reply.Build(), 0, reply.BufferLength(), SocketFlags.None);
+            passport.Send(reply.Build());
         }
     }
 }

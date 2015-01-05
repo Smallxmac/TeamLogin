@@ -6,6 +6,10 @@ namespace LoginServer.IO
 {
     public static class EmailSender
     {
+        /// <summary>
+        /// Send the user the validation code based on the account information that is sent to it.
+        /// </summary>
+        /// <param name="account">The account information.</param>
         public static void SendVerification(Account account)
         {
             var message = new MailMessage();

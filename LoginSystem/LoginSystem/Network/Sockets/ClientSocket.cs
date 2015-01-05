@@ -33,7 +33,7 @@ namespace LoginSystem.Network.Sockets
         public void Connect(string ip, int port)
         {
             IPAddress ipAddress = IPAddress.Parse(ip);
-            IPEndPoint ipEndPoint = new IPEndPoint(ipAddress, port);
+            var ipEndPoint = new IPEndPoint(ipAddress, port);
             clientSocket.BeginConnect(ipEndPoint, ConnectionCallback, null);
         }
 

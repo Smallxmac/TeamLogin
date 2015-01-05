@@ -12,31 +12,47 @@ namespace LoginServer.Network.Packets
 {
     class LoginRequest : PacketWriter
     {
+        /// <summary>
+        /// Constructor for reading the byte array in the params.
+        /// </summary>
+        /// <param name="buffer">The byte array that is read from.</param>
         public LoginRequest(byte[] buffer) : base(buffer)
         {
 
         }
 
-        private int User_next_offset;
-        private int Pass_next_offset;
+        private int _userNextOffset;
+        private int _passNextOffset;
+
+        /// <summary>
+        /// Username value.
+        /// </summary>
         public string Username
         {
-            set { WriteStringWithLength(value, 4, out User_next_offset); }
-            get { return ReadStringFromLength(4, out User_next_offset); }
+            set { WriteStringWithLength(value, 4, out _userNextOffset); }
+            get { return ReadStringFromLength(4, out _userNextOffset); }
         }
-
+        /// <summary>
+        /// Password value.
+        /// </summary>
         public string Password
         {
-            set { WriteStringWithLength(value, User_next_offset, out Pass_next_offset); }
-            get { return ReadStringFromLength(User_next_offset, out Pass_next_offset); }
+            set { WriteStringWithLength(value, _userNextOffset, out _passNextOffset); }
+            get { return ReadStringFromLength(_userNextOffset, out _passNextOffset); }
         }
-
+        /// <summary>
+        /// Email value.
+        /// </summary>
         public string Email
         {
-            set { WriteStringWithLength(value, Pass_next_offset); }
-            get { return ReadStringFromLength(Pass_next_offset); }
+            set { WriteStringWithLength(value, _passNextOffset); }
+            get { return ReadStringFromLength(_passNextOffset); }
         }
-
+        /// <summary>
+        /// The handler for the packet.
+        /// </summary>
+        /// <param name="request">The LoginRequest</param>
+        /// <param name="passport">The client Passport</param>
         public void Handle(LoginRequest request, Passport passport)
         {
             string username = request.Username;
@@ -57,8 +73,8 @@ namespace LoginServer.Network.Packets
             if (reply.LoginStatus == AccountStatus.AccountAuthenicated || reply.LoginStatus == AccountStatus.AccountNotActivated)
             {
                 Account account = usingemail ? accountHandler.GetAccountEmail(email) : accountHandler.GetAccount(username);
-                reply.UID = account.UID;
-                passport.account = account;
+                reply.Uid = account.UID;
+                passport.Account = account;
 
                 if (!Program.clients.ContainsKey(account.UID))
                     Program.clients.Add(account.UID, passport);
@@ -66,9 +82,9 @@ namespace LoginServer.Network.Packets
             else if (reply.LoginStatus == AccountStatus.AccountBanned)
             {
                 Account account = usingemail ? accountHandler.GetAccountEmail(email) : accountHandler.GetAccount(username);
-                reply.BaneDateExpire = account.AccountBanExpire;
+                reply.BanDateExpire = account.AccountBanExpire;
             }
-            passport.clientSocket.Send(reply.Build(), 0, reply.BufferLength(), SocketFlags.None);
+            passport.Send(reply.Build());
 
         }
     }

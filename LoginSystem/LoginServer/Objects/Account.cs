@@ -7,6 +7,9 @@ using LoginServer.Enums;
 
 namespace LoginServer.Objects
 {
+    /// <summary>
+    /// This is a masking object of the database table Accounts
+    /// </summary>
     public class Account
     {
         public int UID;

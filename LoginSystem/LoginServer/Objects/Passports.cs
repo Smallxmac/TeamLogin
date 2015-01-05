@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 
 namespace LoginServer.Objects
 {
+    /// <summary>
+    /// Passport for each connecting client.
+    /// </summary>
     public class Passport
     {
-        public string ip;
-        public string ID;
-        public Socket clientSocket;
-        public Account account;
+        public string Ip;
+        public string Id;
+        public Socket ClientSocket;
+        public Account Account;
+
+        public void Send(byte[] buffer)
+        {
+            ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+        }
     }
 }

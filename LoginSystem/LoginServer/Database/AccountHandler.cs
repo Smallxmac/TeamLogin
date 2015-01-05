@@ -23,7 +23,7 @@ namespace LoginServer.Database
         public DateTime BanDateTime;
 
         /// <summary>
-        /// Creates a database connection.
+        /// Creates a database connection. And creates all of the SQL statements.
         /// </summary>
         public AccountHandler()
         {
@@ -284,6 +284,7 @@ namespace LoginServer.Database
                     _dbHandler.Conn.Close();
             }
         }
+
         /// <summary>
         /// Gathers and account out of the database based on account Id
         /// </summary>
@@ -335,6 +336,7 @@ namespace LoginServer.Database
 
             return account;
         }
+
         /// <summary>
         /// Gathers and account out of the database based on email.
         /// </summary>
